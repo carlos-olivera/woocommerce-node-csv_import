@@ -1,0 +1,25 @@
+{
+  "name": "woocommerce-node-csv_import",
+  "version": "1.0.0",
+  "description": "Woocommerce import script",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/carlos-olivera/woocommerce-node-csv_import.git"
+  },
+  "keywords": [
+    "nodejs",
+    "woocommerce",
+    "ecommerce",
+    "javascript"
+  ],
+  "author": "@carlos-olivera",
+  "license": "GPL-3.0-or-later",
+  "bugs": {
+    "url": "https://github.com/carlos-olivera/woocommerce-node-csv_import/issues"
+  },
+  "homepage": "https://github.com/carlos-olivera/woocommerce-node-csv_import#readme"
+}
