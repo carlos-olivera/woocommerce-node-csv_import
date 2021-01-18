@@ -8,7 +8,23 @@ Basic script for import dta from CSV and JSON files to Woocommerce, using the wo
 
 npm install
 
-npm run
+node index.js
+
+
+
+
+```
+
+### Notes
+
+You can map the CSV columns to Woocommerce product's fields:
+
+    const  mapToWoocommerceStructure = (file, mappingSchema, schemaTypes) => {
+
+    mappingSchema = Object with map to csv headers
+    schemaTypes = Object with types including functions
+
+
 
 
 ## License 📄
