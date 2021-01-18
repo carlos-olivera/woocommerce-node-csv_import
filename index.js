@@ -8,6 +8,15 @@ const csv = require('csv-parser')
 const fs = require('fs')
 
 
+const WooCommerceRestApi = require("@woocommerce/woocommerce-rest-api").default;
+
+var WooCommerce = new WooCommerceRestApi({
+  url: '<woocommerce url here>',
+  consumerKey: '',
+  consumerSecret: '',
+  version: "wc/v3"
+});
+
 
 const changeSlug = (input) => {
     return input.toLowerCase().split(' ').join('_')
@@ -25,12 +34,17 @@ const setVisibility = (input) => {
     else return 'hidden'
 }
 
+const setStock = (input) => {
+    return 1
+}
+
 const types = {
     sku: "string",
     name: "string",
     short_description: "string",
     regular_price: "string",
     sale_price: "string",
+    stock_quantity:setStock,
     status: setStaus,
     catalog_visibility: setVisibility,
     categories: "number",
@@ -45,6 +59,7 @@ const mapping = {
     regular_price: "precioVenta",
     sale_price: "precioRebajado",
     status: "disponibilidad",
+    stock_quantity:"codigo",
     catalog_visibility: "habilitado",
     categories: ["id", "categoria1", "categoria2"],
     shipping_class: "almacen",
@@ -52,7 +67,7 @@ const mapping = {
 }
 
 
-const mapToWoocommerceStructure = (file, mappingSchema, schemaTypes) => {
+const  mapToWoocommerceStructure = (file, mappingSchema, schemaTypes) => {
     const results = [];
     return new Promise((resolve, reject) => {
         fs.createReadStream(file)
@@ -60,6 +75,7 @@ const mapToWoocommerceStructure = (file, mappingSchema, schemaTypes) => {
             .on('data', (data) => results.push(data))
             .on('error', (err) => reject(err))
             .on('end', () => {
+                console.log("the csv file is finished reading: " + results.length + "records")
                 resolve(results.map(result => {
                     const record = {}
                     Object.keys(mappingSchema).forEach(key => {
@@ -96,16 +112,34 @@ const mapToWoocommerceStructure = (file, mappingSchema, schemaTypes) => {
                         }
                     })
                     return record
-                })
-                )
+                }))
             })
     })
 }
 
 
-mapToWoocommerceStructure('input/crazystore02.csv',mapping, types).then(arreglo => {
-    console.log(arreglo)
-}).catch( err => {
+
+const sendToWoocomerce = (record) => {
+    return WooCommerce.post("products", record)
+        .then((response) => {
+            console.log("Success code: " + response.data.name)
+        })
+        .catch((error) => {
+            console.log("ERROR!")
+            console.log(error.response.config.data)
+        })
+}
+
+
+mapToWoocommerceStructure('<path to csv file>', mapping, types).then(arreglo => {
+    console.log("Starting submit to server...")
+    arreglo.forEach((record, index) => {
+        setTimeout(function () {
+            console.log("Sending: " + record.sku)
+            sendToWoocomerce(record)
+        }, index * 3000);
+    })
+}).catch(err => {
     console.log(err)
 })
 
